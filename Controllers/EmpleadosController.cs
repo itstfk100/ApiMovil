@@ -11,9 +11,7 @@ namespace MarcacionPro.API.Controllers
     {
         private readonly AppDbContext _context;
 
-        public EmpleadosController(
-            AppDbContext context
-        )
+        public EmpleadosController(AppDbContext context)
         {
             _context = context;
         }
@@ -27,25 +25,55 @@ namespace MarcacionPro.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Empleado>> Buscar(int id)
         {
-            var empleado =
-                await _context.Empleados.FindAsync(id);
-
-            if (empleado == null)
-                return NotFound();
+            var empleado = await _context.Empleados.FindAsync(id);
+            if (empleado == null) return NotFound();
 
             return empleado;
         }
 
         [HttpPost]
-        public async Task<ActionResult> Registrar(
-            Empleado empleado
-        )
+        public async Task<ActionResult<Empleado>> Registrar(Empleado empleado)
         {
             _context.Empleados.Add(empleado);
+            await _context.SaveChangesAsync();
 
+            // Usamos "Buscar" que es el nombre real de tu método GET por ID
+            return CreatedAtAction(nameof(Buscar), new { id = empleado.IdEmpleado }, empleado);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> Editar(int id, Empleado empleado)
+        {
+            if (id != empleado.IdEmpleado) return BadRequest();
+
+            _context.Entry(empleado).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
             return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Eliminar(int id)
+        {
+            var empleado = await _context.Empleados.FindAsync(id);
+            if (empleado == null) return NotFound();
+
+            _context.Empleados.Remove(empleado);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpPatch("estado/{id}")]
+        public async Task<ActionResult> CambiarEstado(int id)
+        {
+            var empleado = await _context.Empleados.FindAsync(id);
+            if (empleado == null) return NotFound();
+
+            empleado.Estado = !empleado.Estado;
+            await _context.SaveChangesAsync();
+
+            return Ok(empleado);
         }
     }
 }
