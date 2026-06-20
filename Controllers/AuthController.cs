@@ -18,22 +18,29 @@ namespace ApiMovil.Controllers
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(
-            LoginRequest request
+            [FromBody] LoginRequest request
         )
         {
+            // Log para debug (ver en la consola del backend)
+            Console.WriteLine($"Intento de login - Usuario: '{request.Usuario}', Clave: '{request.Clave}'");
+
             var usuario = await _context.Usuarios
                 .FirstOrDefaultAsync(u =>
-                    u.UsuarioNombre == request.Usuario &&
-                    u.Clave == request.Clave
+                    u.UsuarioNombre.Trim().ToLower() == request.Usuario.Trim().ToLower() &&
+                    u.Clave.Trim() == request.Clave.Trim() &&
+                    u.Estado == true
                 );
 
             if (usuario == null)
             {
+                // Log de fallo
+                Console.WriteLine("Login fallido: Usuario no encontrado, clave errónea o inactivo.");
                 return Unauthorized(
-                    new { mensaje = "Credenciales incorrectas" }
+                    new { mensaje = "Usuario o contraseña incorrectos" }
                 );
             }
 
+            Console.WriteLine($"Login exitoso: {usuario.UsuarioNombre}");
             return Ok(new
             {
                 usuario.IdUsuario,

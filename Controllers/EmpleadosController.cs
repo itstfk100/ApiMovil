@@ -46,6 +46,9 @@ namespace MarcacionPro.API.Controllers
         {
             if (id != empleado.IdEmpleado) return BadRequest();
 
+            // Re-activación automática al actualizar datos
+            empleado.Estado = true;
+
             _context.Entry(empleado).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
@@ -58,10 +61,11 @@ namespace MarcacionPro.API.Controllers
             var empleado = await _context.Empleados.FindAsync(id);
             if (empleado == null) return NotFound();
 
-            _context.Empleados.Remove(empleado);
+            // Soft Delete: Inactivo en lugar de eliminar
+            empleado.Estado = false;
             await _context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new { mensaje = "Empleado marcado como inactivo" });
         }
 
         [HttpPatch("estado/{id}")]

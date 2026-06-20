@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace ApiMovil.Controllers
 {
@@ -18,7 +19,6 @@ namespace ApiMovil.Controllers
             _context = context;
         }
 
-        // GET: api/Planificaciones
         [HttpGet]
         public async Task<IActionResult> GetPlanificaciones()
         {
@@ -30,21 +30,38 @@ namespace ApiMovil.Controllers
             return Ok(planificaciones);
         }
 
-        // POST: api/Planificaciones
         [HttpPost]
         public async Task<IActionResult> PostPlanificacion([FromBody] Planificacion planificacion)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (planificacion.FechaInicio > planificacion.FechaFin)
-            {
-                return BadRequest("La fecha de inicio no puede ser posterior a la fecha de fin.");
-            }
-
             _context.Planificaciones.Add(planificacion);
             await _context.SaveChangesAsync();
 
-            return Ok(new { mensaje = "Empleado planificado con éxito" });
+            return Ok(new { mensaje = "Planificación creada con éxito" });
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutPlanificacion(int id, [FromBody] Planificacion planificacion)
+        {
+            if (id != planificacion.IdPlanificacion) return BadRequest();
+
+            _context.Entry(planificacion).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Planificación actualizada correctamente" });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePlanificacion(int id)
+        {
+            var planificacion = await _context.Planificaciones.FindAsync(id);
+            if (planificacion == null) return NotFound();
+
+            planificacion.Estado = false;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Planificación desactivada correctamente" });
         }
     }
 }

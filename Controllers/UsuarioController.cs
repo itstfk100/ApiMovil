@@ -46,7 +46,7 @@ namespace ApiMovil.Controllers
             {
                 IdEmpleado = dto.IdEmpleado,
                 UsuarioNombre = dto.UsuarioNombre,
-                Clave = dto.Clave, 
+                Clave = dto.Clave,
                 Rol = dto.Rol
             };
 
@@ -55,11 +55,34 @@ namespace ApiMovil.Controllers
 
             return Ok("Usuario activado con éxito.");
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutUsuario(int id, [FromBody] Usuario usuario)
+        {
+            if (id != usuario.IdUsuario) return BadRequest();
+
+            _context.Entry(usuario).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Usuario actualizado correctamente" });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUsuario(int id)
+        {
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null) return NotFound();
+
+            usuario.Estado = false;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Usuario desactivado correctamente" });
+        }
     }
 
     public class RegistrarUsuarioDto
     {
-        public int IdEmpleado { get; set; } 
+        public int IdEmpleado { get; set; }
         public string UsuarioNombre { get; set; } = string.Empty;
         public string Clave { get; set; } = string.Empty;
         public string Rol { get; set; } = string.Empty;

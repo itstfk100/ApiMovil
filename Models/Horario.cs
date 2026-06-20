@@ -23,5 +23,7 @@ namespace ApiMovil.Models
         public TimeSpan? HoraFinRefrigerio { get; set; }
 
         public int ToleranciaMinutos { get; set; } = 0;
+
+        public bool Estado { get; set; } = true;
     }
 }

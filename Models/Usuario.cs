@@ -15,6 +15,8 @@ namespace ApiMovil.Models
 
         public int IdEmpleado { get; set; }
 
+        public bool Estado { get; set; } = true;
+
         [ForeignKey("IdEmpleado")]
         public Empleado? Empleado { get; set; }
     }

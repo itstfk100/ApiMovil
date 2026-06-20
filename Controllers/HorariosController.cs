@@ -1,8 +1,9 @@
 ﻿using ApiMovil.Data;
-using ApiMovil.Models; // Ajusta al namespace de tu proyecto
+using ApiMovil.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace ApiMovil.Controllers
 {
@@ -10,14 +11,13 @@ namespace ApiMovil.Controllers
     [ApiController]
     public class HorariosController : ControllerBase
     {
-        private readonly AppDbContext _context; // Ajusta al nombre de tu DbContext
+        private readonly AppDbContext _context;
 
         public HorariosController(AppDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Horarios
         [HttpGet]
         public async Task<IActionResult> GetHorarios()
         {
@@ -25,7 +25,6 @@ namespace ApiMovil.Controllers
             return Ok(horarios);
         }
 
-        // POST: api/Horarios
         [HttpPost]
         public async Task<IActionResult> PostHorario([FromBody] Horario horario)
         {
@@ -35,6 +34,29 @@ namespace ApiMovil.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { mensaje = "Horario creado con éxito", id = horario.IdHorario });
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutHorario(int id, [FromBody] Horario horario)
+        {
+            if (id != horario.IdHorario) return BadRequest();
+
+            _context.Entry(horario).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Horario actualizado con éxito" });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteHorario(int id)
+        {
+            var horario = await _context.Horarios.FindAsync(id);
+            if (horario == null) return NotFound();
+
+            horario.Estado = false;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Horario desactivado con éxito" });
         }
     }
 }

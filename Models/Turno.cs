@@ -42,5 +42,7 @@ namespace ApiMovil.Models
 
         [ForeignKey("IdHorarioDomingo")]
         public Horario? HorarioDomingo { get; set; }
+
+        public bool Estado { get; set; } = true;
     }
 }

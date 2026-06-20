@@ -29,6 +29,8 @@ namespace ApiMovil.Models
 
         public string? Foto { get; set; } // String Base64 para la foto del móvil
 
+        public bool Estado { get; set; } = true;
+
         [ForeignKey("IdEmpleado")]
         public Empleado? Empleado { get; set; }
     }
