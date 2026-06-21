@@ -45,7 +45,8 @@ namespace ApiMovil.Controllers
             {
                 usuario.IdUsuario,
                 usuario.UsuarioNombre,
-                usuario.Rol
+                usuario.Rol,
+                usuario.IdEmpleado
             });
         }
     }
